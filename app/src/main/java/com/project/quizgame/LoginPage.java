@@ -1,6 +1,5 @@
 package com.project.quizgame;
 
-import static com.project.quizgame.R.id.progressBarLogin;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -126,6 +125,7 @@ public class LoginPage extends AppCompatActivity {
     }
 
     public void signin(){
+        Log.d("GOOGLE_DEBUG", "Launching Google Sign In");
         Intent signinIntent = googleSignInClient.getSignInIntent();
         activityResultLauncher.launch(signinIntent);
     }
@@ -133,10 +133,13 @@ public class LoginPage extends AppCompatActivity {
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
+                signIn.setClickable(true);
+                Log.d("GOOGLE_DEBUG", "Result received: " + result.getResultCode());
                 int resultCode = result.getResultCode();
                 Intent data = result.getData();
 
                 if(resultCode==RESULT_OK && data!=null){
+                    Log.d("GOOGLE_DEBUG", "RESULT_OK");
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                     firebaseSignInWithGoogle(task);
                 }
@@ -146,9 +149,12 @@ public class LoginPage extends AppCompatActivity {
     private void firebaseSignInWithGoogle(Task<GoogleSignInAccount> task){
         try {
             GoogleSignInAccount account = task.getResult(ApiException.class);
+            Log.d("GOOGLE_DEBUG", "Account Email: " + account.getEmail());
+
+            Log.d("GOOGLE_DEBUG", "Token: " + account.getIdToken());
             firebaseGoogleAccount(account);
         } catch (ApiException e) {
-            //e.printStackTrace();
+            Log.e("GOOGLE_DEBUG","Google Sign-In Failed",e);
             signIn.setClickable(true);
             signInGoogle.setClickable(true);
             Toast.makeText(LoginPage.this,e.getMessage(),Toast.LENGTH_SHORT).show();
@@ -156,10 +162,14 @@ public class LoginPage extends AppCompatActivity {
     }
     private void firebaseGoogleAccount(GoogleSignInAccount account){
         AuthCredential authCredential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
+        Log.d("GOOGLE_DEBUG", "Starting Firebase Auth");
         auth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
+                    signIn.setClickable(true);
+                    signInGoogle.setClickable(true);
+                    Log.d("GOOGLE_DEBUG","Firebase task completed: "+task.isSuccessful());
                     Toast.makeText(LoginPage.this,"Signed In Successfully!", Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(LoginPage.this,MainActivity.class);
                     startActivity(i);
