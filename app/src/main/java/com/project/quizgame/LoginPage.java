@@ -2,6 +2,7 @@ package com.project.quizgame;
 
 
 import android.content.Intent;
+import android.credentials.CredentialManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,6 +31,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,6 +48,7 @@ public class LoginPage extends AppCompatActivity {
     TextView forgotPassword;
     ProgressBar progressBarSignIn;
     FirebaseAuth auth = FirebaseAuth.getInstance();
+    CredentialManager credentialManager;
     GoogleSignInClient googleSignInClient;
     ActivityResultLauncher<Intent> activityResultLauncher;
 
@@ -119,8 +122,8 @@ public class LoginPage extends AppCompatActivity {
 
     public void signInWithGoogle(){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("381277859230-v7ls4l9oumfsjo3u5kamjotae2vm703o.apps.googleusercontent.com").requestEmail().build();
-
         googleSignInClient = GoogleSignIn.getClient(this,gso);
+        Log.d("GOOGLE_DEBUG","default_web_client_id = "+getString(R.string.default_web_client_id));
         signin();
     }
 
@@ -139,6 +142,7 @@ public class LoginPage extends AppCompatActivity {
                 Intent data = result.getData();
 
                 if(resultCode==RESULT_OK && data!=null){
+                    progressBarSignIn.setVisibility(View.VISIBLE);
                     Log.d("GOOGLE_DEBUG", "RESULT_OK");
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                     firebaseSignInWithGoogle(task);
@@ -150,13 +154,13 @@ public class LoginPage extends AppCompatActivity {
         try {
             GoogleSignInAccount account = task.getResult(ApiException.class);
             Log.d("GOOGLE_DEBUG", "Account Email: " + account.getEmail());
-
             Log.d("GOOGLE_DEBUG", "Token: " + account.getIdToken());
             firebaseGoogleAccount(account);
         } catch (ApiException e) {
             Log.e("GOOGLE_DEBUG","Google Sign-In Failed",e);
             signIn.setClickable(true);
             signInGoogle.setClickable(true);
+            progressBarSignIn.setVisibility(View.INVISIBLE);
             Toast.makeText(LoginPage.this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
     }
@@ -169,6 +173,7 @@ public class LoginPage extends AppCompatActivity {
                 if(task.isSuccessful()){
                     signIn.setClickable(true);
                     signInGoogle.setClickable(true);
+                    progressBarSignIn.setVisibility(View.INVISIBLE);
                     Log.d("GOOGLE_DEBUG","Firebase task completed: "+task.isSuccessful());
                     Toast.makeText(LoginPage.this,"Signed In Successfully!", Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(LoginPage.this,MainActivity.class);
@@ -178,8 +183,10 @@ public class LoginPage extends AppCompatActivity {
                 else {
                     signIn.setClickable(true);
                     signInGoogle.setClickable(true);
+                    progressBarSignIn.setVisibility(View.INVISIBLE);
                     Toast.makeText(LoginPage.this,task.getException().getMessage(),Toast.LENGTH_LONG).show();
-                    Log.e("GoogleAuth","Firebase authentication failed",task.getException());
+                    Exception e = task.getException();
+                    Log.e("GOOGLE_DEBUG","Firebase failed: "+e.getClass().getSimpleName() +" -> "+e.getMessage(),e);
                 }
             }
         });

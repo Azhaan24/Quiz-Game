@@ -40,11 +40,12 @@ dependencies {
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
-    implementation(libs.firebase.database)
+    implementation(libs.firebasedatabase)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
     implementation(libs.firebase)
+    implementation(platform(libs.firebasebom))
     implementation(libs.playservices)
-}
+    }

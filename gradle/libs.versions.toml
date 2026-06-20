@@ -7,10 +7,11 @@ appcompat = "1.7.1"
 material = "1.14.0"
 activityKtx = "1.13.0"
 constraintlayout = "2.2.1"
-auth = "19.2.0"
+bom = "34.0.0"
 services = "21.4.0"
 googleGmsGoogleServices = "4.4.4"
 firebaseDatabase = "22.0.1"
+authversion = "24.0.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,9 +21,10 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-firebase = { group = "com.google.firebase", name = "firebase-auth", version.ref = "auth" }
+firebase = { group = "com.google.firebase", name = "firebase-auth", version.ref = "authversion" }
+firebasebom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "bom" }
 playservices = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "services" }
-firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+firebasedatabase = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
